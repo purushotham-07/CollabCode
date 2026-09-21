@@ -2,35 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Zero-CLS Fallback Metrics for Geist Sans */
+@font-face {
+  font-family: 'Geist Sans Fallback';
+  src: local('Arial');
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 101%;
+}
+
+:root, .dark {
+  /* Canvas & Low-Reflectance Surfaces */
+  --surface-canvas: oklch(0.13 0.006 260);
+  --surface-subtle: oklch(0.16 0.008 260);
+  --surface-raised: oklch(0.19 0.010 260);
+  --surface-overlay: oklch(0.23 0.012 260);
+  --surface-active: oklch(0.27 0.014 260);
+
+  /* Architectural Borders */
+  --border-subtle: oklch(0.24 0.008 260);
+  --border-default: oklch(0.30 0.010 260);
+  --border-hover: oklch(0.40 0.014 260);
+
+  /* High-Legibility Typography */
+  --text-primary: oklch(0.97 0.002 260);
+  --text-secondary: oklch(0.74 0.008 260);
+  --text-muted: oklch(0.56 0.012 260);
+  --text-on-accent: oklch(0.12 0.008 260);
+
+  /* Single Accent: Precision Emerald */
+  --accent-base: oklch(0.72 0.17 155);
+  --accent-hover: oklch(0.78 0.18 155);
+  --accent-active: oklch(0.66 0.16 155);
+  --accent-subtle: oklch(0.22 0.05 155);
+  --accent-border: oklch(0.35 0.09 155);
+
+  /* Semantic Status Signals */
+  --status-success: oklch(0.72 0.17 155);
+  --status-warning: oklch(0.78 0.16 75);
+  --status-error: oklch(0.65 0.22 25);
+  --status-info: oklch(0.72 0.14 235);
+}
+
+.light {
+  --surface-canvas: oklch(0.99 0.002 260);
+  --surface-subtle: oklch(0.96 0.004 260);
+  --surface-raised: oklch(1.0 0.0 0);
+  --surface-overlay: oklch(0.94 0.006 260);
+  --surface-active: oklch(0.90 0.008 260);
+
+  --border-subtle: oklch(0.90 0.004 260);
+  --border-default: oklch(0.82 0.008 260);
+  --border-hover: oklch(0.65 0.012 260);
+
+  --text-primary: oklch(0.18 0.010 260);
+  --text-secondary: oklch(0.38 0.012 260);
+  --text-muted: oklch(0.52 0.010 260);
+  --text-on-accent: oklch(0.99 0.002 260);
+
+  --accent-base: oklch(0.55 0.16 155);
+  --accent-hover: oklch(0.48 0.16 155);
+  --accent-active: oklch(0.42 0.15 155);
+  --accent-subtle: oklch(0.92 0.04 155);
+  --accent-border: oklch(0.80 0.08 155);
+}
+
 @layer base {
   body {
-    @apply bg-[#0B0F17] text-slate-100 font-sans;
+    background-color: var(--surface-canvas);
+    color: var(--text-primary);
+    font-family: 'Geist Sans', 'Geist Sans Fallback', system-ui, -apple-system, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
+/* Precision Workbench Component Classes - Compositor & GPU Optimized */
+.workbench-card {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  position: relative;
+  /* Composited elevation via pseudo-element opacity fade (no box-shadow repaint) */
+}
+
+.workbench-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.workbench-card:hover::after {
+  opacity: 1;
+}
+
+/* Replaces legacy blur glass-panel with crisp, zero-paint solid overlay */
 .glass-panel {
-  background: rgba(22, 27, 34, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
 }
 
-.glow-brand {
-  box-shadow: 0 0 40px -10px rgba(34, 197, 94, 0.3);
+/* Off-screen performance containment */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
-/* Custom Scrollbars */
+.contain-paint {
+  contain: layout paint;
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom Workbench Hairline Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d1117;
+  background: var(--surface-canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #30363d;
-  border-radius: 4px;
+  background: var(--border-default);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: var(--border-hover);
 }
