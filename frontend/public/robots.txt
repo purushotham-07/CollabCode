@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /privacy
+Allow: /terms
+Disallow: /api/
+Disallow: /workspace/
+Disallow: /dashboard
+
+Sitemap: https://collabcode.dev/sitemap.xml

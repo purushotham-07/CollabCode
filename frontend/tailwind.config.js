@@ -19,6 +19,7 @@ export default {
           subtle: 'var(--border-subtle)',
           default: 'var(--border-default)',
           hover: 'var(--border-hover)',
+          focus: 'var(--border-focus)',
         },
         text: {
           primary: 'var(--text-primary)',
@@ -37,23 +38,26 @@ export default {
         status: {
           success: 'var(--status-success)',
           warning: 'var(--status-warning)',
-          error: 'var(--status-error)',
+          danger: 'var(--status-danger)',
           info: 'var(--status-info)',
         },
-        // Backward-compatible semantic aliases for workspace editor components
+        // 8 distinct, accessible collaborator colors for cursors & presence
+        peer: {
+          1: '#10b981', // Emerald
+          2: '#0ea5e9', // Sky
+          3: '#f59e0b', // Amber
+          4: '#f43f5e', // Rose
+          5: '#8b5cf6', // Violet
+          6: '#06b6d4', // Cyan
+          7: '#f97316', // Orange
+          8: '#14b8a6', // Teal
+        },
         editor: {
           bg: 'var(--surface-canvas)',
           sidebar: 'var(--surface-subtle)',
           border: 'var(--border-subtle)',
           active: 'var(--surface-raised)',
           text: 'var(--text-secondary)',
-        },
-        brand: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          500: 'var(--accent-base)',
-          600: 'var(--accent-hover)',
-          700: 'var(--accent-active)',
         }
       },
       fontFamily: {
@@ -62,17 +66,24 @@ export default {
       },
       borderRadius: {
         none: '0px',
-        sm: '4px',
-        md: '6px',
-        lg: '8px',
-        xl: '12px',
+        sm: '6px',
+        md: '10px',
+        lg: '16px',
+        full: '9999px',
+      },
+      boxShadow: {
+        'soft-sm': 'var(--shadow-sm)',
+        'soft-md': 'var(--shadow-md)',
+        'soft-lg': 'var(--shadow-lg)',
+        'soft-overlay': 'var(--shadow-overlay)',
       },
       transitionTimingFunction: {
         workbench: 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
       transitionDuration: {
-        fast: '120ms',
-        normal: '180ms',
+        fast: '150ms',
+        normal: '220ms',
+        slow: '300ms',
       }
     },
   },

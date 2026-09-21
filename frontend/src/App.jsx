@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -8,7 +8,12 @@ import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import WorkspaceView from './pages/WorkspaceView';
 import JoinWorkspace from './pages/JoinWorkspace';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ToastProvider } from './components/ui/Toast';
+import CookieConsent from './components/ui/CookieConsent';
+import { FileQuestion, ArrowLeft } from 'lucide-react';
 
 export default function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -18,52 +23,61 @@ export default function App() {
   }, [checkAuth]);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/invite/:token" element={<JoinWorkspace />} />
-        
-        {/* Protected Application Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/workspace/:id"
-          element={
-            <ProtectedRoute>
-              <WorkspaceView />
-            </ProtectedRoute>
-          }
-        />
+    <ToastProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/invite/:token" element={<JoinWorkspace />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          
+          {/* Protected Application Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspace/:id"
+            element={
+              <ProtectedRoute>
+                <WorkspaceView />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Fallback 404 */}
-        <Route
-          path="*"
-          element={
-            <div className="min-h-screen bg-[#0B0F17] flex flex-col items-center justify-center p-4 text-center">
-              <h1 className="text-7xl font-extrabold text-brand-400 font-mono">404</h1>
-              <p className="text-xl font-bold text-white mt-4">Page not found</p>
-              <p className="text-sm text-slate-400 mt-2 max-w-sm">
-                The page or workspace you are trying to reach does not exist or has moved.
-              </p>
-              <a
-                href="/"
-                className="mt-6 px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors"
-              >
-                Return to Home
-              </a>
-            </div>
-          }
-        />
-      </Routes>
-    </Router>
+          {/* Fallback 404 */}
+          <Route
+            path="*"
+            element={
+              <div className="min-h-screen bg-surface-canvas text-text-primary flex flex-col items-center justify-center p-4 text-center selection:bg-accent-subtle selection:text-accent-base">
+                <div className="w-12 h-12 rounded-md bg-surface-raised border border-border-default flex items-center justify-center mb-4 text-text-muted">
+                  <FileQuestion className="w-6 h-6 text-accent" />
+                </div>
+                <h1 className="text-4xl font-bold text-text-primary font-mono tracking-tight">404</h1>
+                <p className="text-base font-semibold text-text-primary mt-2">Page not found</p>
+                <p className="text-xs text-text-muted mt-1 max-w-sm leading-relaxed">
+                  The document or workspace you are trying to reach does not exist or has moved.
+                </p>
+                <Link
+                  to="/"
+                  className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-sm bg-accent text-text-on-accent text-xs font-medium hover:opacity-90 transition-opacity"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Return to Home</span>
+                </Link>
+              </div>
+            }
+          />
+        </Routes>
+        <CookieConsent />
+      </Router>
+    </ToastProvider>
   );
 }
