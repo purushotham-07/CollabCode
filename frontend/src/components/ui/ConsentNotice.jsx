@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import { Button } from './Button';
 
-export function CookieConsent() {
+export function ConsentNotice() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -63,4 +63,4 @@ export function CookieConsent() {
   );
 }
 
-export default CookieConsent;
+export default ConsentNotice;

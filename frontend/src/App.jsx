@@ -8,11 +8,11 @@ import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import WorkspaceView from './pages/WorkspaceView';
 import JoinWorkspace from './pages/JoinWorkspace';
-import PrivacyPolicy from './pages/PrivacyPolicy';
+import LegalPrivacy from './pages/LegalPrivacy';
 import TermsOfService from './pages/TermsOfService';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/ui/Toast';
-import CookieConsent from './components/ui/CookieConsent';
+import ConsentNotice from './components/ui/ConsentNotice';
 import { FileQuestion, ArrowLeft } from 'lucide-react';
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/invite/:token" element={<JoinWorkspace />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/privacy" element={<LegalPrivacy />} />
           <Route path="/terms" element={<TermsOfService />} />
           
           {/* Protected Application Routes */}
@@ -76,7 +76,7 @@ export default function App() {
             }
           />
         </Routes>
-        <CookieConsent />
+        <ConsentNotice />
       </Router>
     </ToastProvider>
   );

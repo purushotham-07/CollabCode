@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function PrivacyPolicy() {
+export default function LegalPrivacy() {
   return (
     <div className="min-h-screen bg-surface-canvas text-text-primary flex flex-col selection:bg-accent-subtle selection:text-accent-base">
       <Navbar />
