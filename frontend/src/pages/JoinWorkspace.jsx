@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { inviteApi } from '../api/invite';
 import { useAuth } from '../hooks/useAuth';
 import RoleBadge from '../components/RoleBadge';
-import { UserPlus, ArrowRight, AlertCircle, Loader2, Code2 } from 'lucide-react';
+import { ArrowRight, AlertCircle, Loader2, Code2 } from 'lucide-react';
 
 export default function JoinWorkspace() {
   const { token } = useParams();
@@ -49,84 +49,84 @@ export default function JoinWorkspace() {
 
   if (isLoading || isAuthLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />
+      <div className="min-h-screen bg-surface-canvas flex items-center justify-center p-4">
+        <Loader2 className="w-6 h-6 text-accent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center p-4 selection:bg-brand-500/30">
-      <div className="max-w-md w-full p-8 rounded-2xl glass-panel border border-slate-800 shadow-2xl text-center">
+    <div className="min-h-screen bg-surface-canvas flex items-center justify-center p-4 selection:bg-accent-subtle selection:text-accent-base">
+      <div className="max-w-md w-full p-7 rounded-lg bg-surface-raised border border-border-default shadow-xl text-center">
         {error ? (
           <div>
-            <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-              <AlertCircle className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-md bg-red-500/10 text-red-400 flex items-center justify-center mx-auto mb-3 border border-red-500/20">
+              <AlertCircle className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Invalid Invitation</h2>
-            <p className="text-sm text-slate-400 mb-6">{error}</p>
+            <h2 className="text-base font-semibold text-text-primary mb-1.5">Invalid Invitation</h2>
+            <p className="text-xs text-text-muted mb-5 leading-relaxed">{error}</p>
             <Link
               to="/dashboard"
-              className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors inline-block"
+              className="px-4 py-2 rounded-sm bg-surface-subtle hover:bg-surface-overlay border border-border-default text-text-primary text-xs font-medium transition-colors duration-120 inline-block"
             >
               Go to Dashboard
             </Link>
           </div>
         ) : (
           <div>
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center mx-auto mb-4 border border-brand-500/20">
-              <Code2 className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-md bg-surface-subtle text-accent flex items-center justify-center mx-auto mb-3 border border-border-subtle">
+              <Code2 className="w-5 h-5" />
             </div>
 
-            <h2 className="text-2xl font-bold text-white tracking-tight">You've been invited!</h2>
-            <p className="text-sm text-slate-400 mt-2">
-              Join collaborative workspace <span className="font-semibold text-slate-200">"{invite?.workspaceName}"</span>
+            <h2 className="text-lg font-semibold text-text-primary tracking-tight">Workspace Invitation</h2>
+            <p className="text-xs text-text-muted mt-1">
+              You have been invited to join <span className="font-semibold text-text-primary font-mono">"{invite?.workspaceName}"</span>
             </p>
 
-            <div className="my-6 p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono">Assigned Role:</span>
+            <div className="my-5 p-3 rounded-md bg-surface-canvas border border-border-subtle flex items-center justify-between">
+              <span className="text-xs text-text-muted font-mono">Assigned Role:</span>
               <RoleBadge role={invite?.role} size="md" />
             </div>
 
             {isAuthenticated ? (
               <div>
-                <p className="text-xs text-slate-400 mb-4 font-mono">
-                  Signed in as <span className="text-slate-200">{user?.displayName}</span> ({user?.email})
+                <p className="text-[11px] text-text-muted mb-4 font-mono">
+                  Signed in as <span className="text-text-secondary">{user?.displayName}</span> ({user?.email})
                 </p>
                 <button
                   onClick={handleJoin}
                   disabled={isJoining}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-600 hover:from-brand-600 hover:to-emerald-700 text-slate-950 font-bold text-sm shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  className="w-full py-2 px-4 rounded-sm bg-accent text-text-on-accent font-medium text-xs hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-120 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
                   {isJoining ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       <span>Joining Workspace...</span>
                     </>
                   ) : (
                     <>
                       <span>Accept Invitation & Join</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
-                <p className="text-xs text-slate-400 mb-2">
+              <div className="space-y-2.5">
+                <p className="text-xs text-text-muted mb-2">
                   Please log in or create an account to accept this invite
                 </p>
                 <Link
                   to="/login"
                   state={{ from: { pathname: `/invite/${token}` } }}
-                  className="block w-full py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm transition-colors"
+                  className="block w-full py-2 px-4 rounded-sm bg-accent text-text-on-accent font-medium text-xs hover:opacity-90 transition-opacity duration-120"
                 >
                   Sign In to Join
                 </Link>
                 <Link
                   to="/register"
                   state={{ from: { pathname: `/invite/${token}` } }}
-                  className="block w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-medium text-sm border border-slate-800 transition-colors"
+                  className="block w-full py-2 px-4 rounded-sm bg-surface-canvas hover:bg-surface-subtle text-text-secondary font-medium text-xs border border-border-default transition-colors duration-120"
                 >
                   Create Account
                 </Link>

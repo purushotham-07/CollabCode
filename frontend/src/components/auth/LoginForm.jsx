@@ -30,7 +30,6 @@ export default function LoginForm() {
     e.preventDefault();
     setServerError('');
 
-    // Zod validation
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors = {};
@@ -60,20 +59,20 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-8 rounded-2xl glass-panel shadow-2xl border border-slate-800">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-white">Welcome back</h2>
-        <p className="text-sm text-slate-400 mt-2">
-          Enter your credentials to access your collaborative workspaces
+    <div className="w-full max-w-md mx-auto p-7 rounded-lg bg-surface-raised border border-border-default shadow-xl">
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold tracking-tight text-text-primary">Sign in to CollabCode</h2>
+        <p className="text-xs text-text-muted mt-1.5">
+          Access your collaborative workspaces and synchronized documents
         </p>
       </div>
 
       {serverError && (
         <div
           role="alert"
-          className="mb-6 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-300 text-sm animate-in fade-in duration-200"
+          className="mb-5 p-3 rounded-md bg-red-500/10 border border-red-500/30 flex items-start gap-2.5 text-red-300 text-xs"
         >
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-400" />
           <span>{serverError}</span>
         </div>
       )}
@@ -81,9 +80,9 @@ export default function LoginForm() {
       {/* Google OAuth Option */}
       <OAuthButton />
 
-      <div className="relative my-6 flex items-center justify-center">
-        <div className="border-t border-slate-800 w-full" />
-        <span className="bg-slate-900 px-3 text-xs uppercase font-mono tracking-wider text-slate-500 absolute">
+      <div className="relative my-5 flex items-center justify-center">
+        <div className="border-t border-border-subtle w-full" />
+        <span className="bg-surface-raised px-2.5 text-[10px] uppercase font-mono tracking-wider text-text-muted absolute">
           or continue with email
         </span>
       </div>
@@ -93,12 +92,12 @@ export default function LoginForm() {
         <div>
           <label
             htmlFor="login-email"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5"
+            className="block text-[11px] font-mono font-medium uppercase tracking-wider text-text-secondary mb-1.5"
           >
             Email Address
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
               <Mail className="w-4 h-4" />
             </div>
             <input
@@ -108,18 +107,16 @@ export default function LoginForm() {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="you@domain.com"
-              className={`w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 transition-all ${
+              placeholder="developer@domain.com"
+              className={`w-full pl-9 pr-3.5 py-2 bg-surface-canvas border rounded-md text-text-primary placeholder-text-muted text-xs focus:outline-none transition-colors duration-120 ${
                 errors.email
-                  ? 'border-red-500/50 focus:ring-red-500/40'
-                  : 'border-slate-800 focus:border-brand-500/80 focus:ring-brand-500/20'
+                  ? 'border-red-500/60 focus:border-red-500'
+                  : 'border-border-default focus:border-accent'
               }`}
             />
           </div>
           {errors.email && (
-            <p className="mt-1 text-xs text-red-400 flex items-center gap-1">
-              {errors.email}
-            </p>
+            <p className="mt-1 text-[11px] text-red-400">{errors.email}</p>
           )}
         </div>
 
@@ -127,12 +124,12 @@ export default function LoginForm() {
         <div>
           <label
             htmlFor="login-password"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5"
+            className="block text-[11px] font-mono font-medium uppercase tracking-wider text-text-secondary mb-1.5"
           >
             Password
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
               <Lock className="w-4 h-4" />
             </div>
             <input
@@ -143,17 +140,15 @@ export default function LoginForm() {
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
-              className={`w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full pl-9 pr-3.5 py-2 bg-surface-canvas border rounded-md text-text-primary placeholder-text-muted text-xs focus:outline-none transition-colors duration-120 ${
                 errors.password
-                  ? 'border-red-500/50 focus:ring-red-500/40'
-                  : 'border-slate-800 focus:border-brand-500/80 focus:ring-brand-500/20'
+                  ? 'border-red-500/60 focus:border-red-500'
+                  : 'border-border-default focus:border-accent'
               }`}
             />
           </div>
           {errors.password && (
-            <p className="mt-1 text-xs text-red-400 flex items-center gap-1">
-              {errors.password}
-            </p>
+            <p className="mt-1 text-[11px] text-red-400">{errors.password}</p>
           )}
         </div>
 
@@ -162,25 +157,25 @@ export default function LoginForm() {
           id="login-submit-btn"
           type="submit"
           disabled={isLoading}
-          className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-600 hover:from-brand-600 hover:to-emerald-700 text-slate-950 font-semibold text-sm shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full mt-2 py-2 px-4 rounded-md bg-accent text-text-on-accent font-medium text-xs hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-120 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
               <span>Signing in...</span>
             </>
           ) : (
             <>
-              <span>Sign in</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Sign In</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </>
           )}
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-400 mt-6">
+      <p className="text-center text-xs text-text-muted mt-5">
         Don't have an account?{' '}
-        <Link to="/register" className="text-brand-400 hover:text-brand-300 font-medium">
+        <Link to="/register" className="text-accent hover:underline font-medium">
           Create account
         </Link>
       </p>

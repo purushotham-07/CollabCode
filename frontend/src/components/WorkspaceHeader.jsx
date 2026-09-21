@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Share2, Users, Trash2, Code2 } from 'lucide-react';
+import { ChevronLeft, Share2, Trash2, Terminal } from 'lucide-react';
 import RoleBadge from './RoleBadge';
 
 export default function WorkspaceHeader({
@@ -13,45 +13,45 @@ export default function WorkspaceHeader({
   const canInvite = myRole === 'OWNER' || myRole === 'EDITOR';
 
   return (
-    <header className="h-12 border-b border-slate-800 bg-[#0d1117] px-4 flex items-center justify-between select-none">
+    <header className="h-11 border-b border-border-subtle bg-surface-subtle px-3.5 flex items-center justify-between select-none">
       {/* Left: Back Link & Workspace Name */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <Link
           to="/dashboard"
           title="Back to Dashboard"
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="p-1 rounded-sm text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-120"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </Link>
 
-        <div className="h-4 w-px bg-slate-800" />
+        <div className="h-3.5 w-px bg-border-subtle" />
 
-        <div className="flex items-center gap-2.5">
-          <Code2 className="w-4 h-4 text-brand-400" />
-          <h2 className="text-sm font-bold text-white tracking-tight">{workspace?.name}</h2>
+        <div className="flex items-center gap-2">
+          <Terminal className="w-3.5 h-3.5 text-accent" />
+          <h2 className="text-xs font-semibold text-text-primary font-mono tracking-tight">{workspace?.name}</h2>
           <RoleBadge role={myRole} size="sm" />
         </div>
       </div>
 
       {/* Right: Collaborators & Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* Collaborators Avatar Stack */}
         <div
           onClick={onOpenInvite}
-          className="flex items-center gap-2 cursor-pointer p-1 rounded-lg hover:bg-slate-800/60 transition-colors"
+          className="flex items-center gap-2 cursor-pointer p-1 rounded-sm hover:bg-surface-raised transition-colors duration-120"
           title="View members"
         >
-          <div className="flex -space-x-1.5 overflow-hidden">
+          <div className="flex -space-x-1 overflow-hidden font-mono text-[9px]">
             {workspace?.members?.slice(0, 4).map((m, idx) => (
               <div
                 key={m.userId || idx}
-                className="w-6 h-6 rounded-full ring-2 ring-slate-900 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-200"
+                className="w-5 h-5 rounded-sm bg-surface-raised border border-border-default flex items-center justify-center font-semibold text-text-secondary"
               >
                 {m.displayName ? m.displayName.charAt(0).toUpperCase() : 'U'}
               </div>
             ))}
           </div>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-[11px] font-mono text-text-muted">
             {workspace?.members?.length || 1} online
           </span>
         </div>
@@ -60,9 +60,9 @@ export default function WorkspaceHeader({
         {canInvite && (
           <button
             onClick={onOpenInvite}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/30 text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-accent-subtle hover:bg-accent/20 text-accent border border-accent-border text-[11px] font-mono font-medium transition-colors duration-120 cursor-pointer"
           >
-            <Share2 className="w-3.5 h-3.5" />
+            <Share2 className="w-3 h-3" />
             <span>Invite</span>
           </button>
         )}
@@ -76,9 +76,9 @@ export default function WorkspaceHeader({
               }
             }}
             title="Delete Workspace"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800/80 transition-colors"
+            className="p-1 rounded-sm text-text-muted hover:text-red-400 hover:bg-surface-raised transition-colors duration-120"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>

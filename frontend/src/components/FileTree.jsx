@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Edit2,
   Trash2,
-  MoreVertical,
   Check,
   X,
 } from 'lucide-react';
@@ -143,20 +142,20 @@ export default function FileTree({
                 onSelectFile(node.file.id);
               }
             }}
-            style={{ paddingLeft: `${depth * 14 + 10}px` }}
-            className={`group relative flex items-center justify-between py-1.5 pr-2 rounded-lg cursor-pointer text-xs font-mono transition-colors ${
+            style={{ paddingLeft: `${depth * 12 + 8}px` }}
+            className={`group relative flex items-center justify-between py-1 pr-2 rounded-sm cursor-pointer text-xs font-mono transition-colors duration-100 ${
               isSelected
-                ? 'bg-brand-500/15 text-brand-300 font-semibold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                ? 'bg-surface-raised text-accent font-medium'
+                : 'text-text-muted hover:text-text-primary hover:bg-surface-raised/40'
             }`}
           >
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
               {node.isDirectory ? (
-                <span className="text-slate-500 flex-shrink-0">
-                  {isOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                <span className="text-text-muted flex-shrink-0">
+                  {isOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                 </span>
               ) : (
-                <span className="w-3.5" />
+                <span className="w-3" />
               )}
 
               <FileIcon path={node.path} isDirectory={node.isDirectory} isOpen={isOpen} />
@@ -175,19 +174,19 @@ export default function FileTree({
                       if (e.key === 'Enter') handleCommitRename(node.file.id);
                       if (e.key === 'Escape') setRenamingId(null);
                     }}
-                    className="w-full bg-slate-900 border border-brand-500/80 rounded px-1.5 py-0.5 text-xs text-white focus:outline-none"
+                    className="w-full bg-surface-canvas border border-accent rounded-sm px-1 py-0.2 text-xs text-text-primary focus:outline-none"
                   />
                   <button
                     onClick={() => handleCommitRename(node.file.id)}
-                    className="text-emerald-400 hover:text-emerald-300"
+                    className="text-accent"
                   >
-                    <Check className="w-3.5 h-3.5" />
+                    <Check className="w-3 h-3" />
                   </button>
                   <button
                     onClick={() => setRenamingId(null)}
-                    className="text-red-400 hover:text-red-300"
+                    className="text-red-400"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
               ) : (
@@ -195,17 +194,17 @@ export default function FileTree({
               )}
             </div>
 
-            {/* Hover Actions (Edit/Delete/Create inside folder) */}
+            {/* Hover Actions */}
             {canEdit && !isRenaming && node.file && (
               <div
-                className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-2 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-1.5 transition-opacity duration-100"
                 onClick={(e) => e.stopPropagation()}
               >
                 {node.isDirectory && (
                   <button
                     onClick={() => handleStartCreate('file', node.path)}
                     title="New File inside"
-                    className="p-1 hover:text-brand-400 rounded hover:bg-slate-700/60"
+                    className="p-0.5 hover:text-accent rounded-sm hover:bg-surface-raised"
                   >
                     <FilePlus className="w-3 h-3" />
                   </button>
@@ -213,7 +212,7 @@ export default function FileTree({
                 <button
                   onClick={() => handleStartRename(node.file)}
                   title="Rename"
-                  className="p-1 hover:text-sky-400 rounded hover:bg-slate-700/60"
+                  className="p-0.5 hover:text-text-primary rounded-sm hover:bg-surface-raised"
                 >
                   <Edit2 className="w-3 h-3" />
                 </button>
@@ -224,7 +223,7 @@ export default function FileTree({
                     }
                   }}
                   title="Delete"
-                  className="p-1 hover:text-red-400 rounded hover:bg-slate-700/60"
+                  className="p-0.5 hover:text-red-400 rounded-sm hover:bg-surface-raised"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -235,8 +234,8 @@ export default function FileTree({
           {/* Inline creation input inside this folder */}
           {creatingType && creatingParent === node.path && (
             <div
-              style={{ paddingLeft: `${(depth + 1) * 14 + 10}px` }}
-              className="py-1 pr-2 flex items-center gap-1.5"
+              style={{ paddingLeft: `${(depth + 1) * 12 + 8}px` }}
+              className="py-1 pr-2 flex items-center gap-1"
             >
               <FileIcon path={newItemName} isDirectory={creatingType === 'folder'} />
               <input
@@ -249,13 +248,13 @@ export default function FileTree({
                   if (e.key === 'Enter') handleCommitCreate();
                   if (e.key === 'Escape') setCreatingType(null);
                 }}
-                className="w-full bg-slate-900 border border-brand-500 rounded px-1.5 py-0.5 text-xs text-white focus:outline-none"
+                className="w-full bg-surface-canvas border border-accent rounded-sm px-1.5 py-0.5 text-xs text-text-primary focus:outline-none"
               />
-              <button onClick={handleCommitCreate} className="text-emerald-400">
-                <Check className="w-3.5 h-3.5" />
+              <button onClick={handleCommitCreate} className="text-accent">
+                <Check className="w-3 h-3" />
               </button>
               <button onClick={() => setCreatingType(null)} className="text-red-400">
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3 h-3" />
               </button>
             </div>
           )}
@@ -270,27 +269,27 @@ export default function FileTree({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0d1117] border-r border-slate-800 w-64 select-none">
+    <div className="flex flex-col h-full bg-surface-subtle border-r border-border-subtle w-60 select-none">
       {/* File Tree Header */}
-      <div className="h-10 px-3.5 border-b border-slate-800 flex items-center justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+      <div className="h-9 px-3 border-b border-border-subtle flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted font-mono">
           Explorer
         </span>
         {canEdit && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <button
               onClick={() => handleStartCreate('file', '')}
               title="New File"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+              className="p-1 rounded-sm text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-100"
             >
-              <FilePlus className="w-4 h-4" />
+              <FilePlus className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => handleStartCreate('folder', '')}
               title="New Folder"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+              className="p-1 rounded-sm text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-100"
             >
-              <FolderPlus className="w-4 h-4" />
+              <FolderPlus className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -298,7 +297,7 @@ export default function FileTree({
 
       {/* Inline Creation Input at Root */}
       {creatingType && creatingParent === '' && (
-        <div className="px-3 py-2 border-b border-slate-800 bg-slate-900/60 flex items-center gap-1.5">
+        <div className="px-2.5 py-1.5 border-b border-border-subtle bg-surface-canvas flex items-center gap-1">
           <FileIcon path={newItemName} isDirectory={creatingType === 'folder'} />
           <input
             type="text"
@@ -310,21 +309,21 @@ export default function FileTree({
               if (e.key === 'Enter') handleCommitCreate();
               if (e.key === 'Escape') setCreatingType(null);
             }}
-            className="w-full bg-slate-900 border border-brand-500 rounded px-1.5 py-0.5 text-xs text-white focus:outline-none"
+            className="w-full bg-surface-subtle border border-accent rounded-sm px-1.5 py-0.5 text-xs text-text-primary focus:outline-none"
           />
-          <button onClick={handleCommitCreate} className="text-emerald-400">
-            <Check className="w-3.5 h-3.5" />
+          <button onClick={handleCommitCreate} className="text-accent">
+            <Check className="w-3 h-3" />
           </button>
           <button onClick={() => setCreatingType(null)} className="text-red-400">
-            <X className="w-3.5 h-3.5" />
+            <X className="w-3 h-3" />
           </button>
         </div>
       )}
 
       {/* Files Tree */}
-      <div className="flex-1 overflow-y-auto py-2 px-1">
+      <div className="flex-1 overflow-y-auto py-1 px-1">
         {files.length === 0 ? (
-          <div className="p-4 text-center text-xs text-slate-500 font-mono">
+          <div className="p-4 text-center text-xs text-text-muted font-mono">
             No files in workspace
           </div>
         ) : (

@@ -33,9 +33,9 @@ export default function OAuthButton() {
       type="button"
       onClick={handleGoogleLogin}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-800/80 text-slate-200 hover:text-white font-medium text-sm transition-all duration-200 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed group"
+      className="w-full flex items-center justify-center gap-2.5 px-4 py-2 rounded-md border border-border-default bg-surface-canvas hover:bg-surface-subtle text-text-primary font-medium text-xs transition-colors duration-120 disabled:opacity-60 disabled:cursor-not-allowed group"
     >
-      <svg className="w-5 h-5 group-hover:scale-105 transition-transform" viewBox="0 0 24 24">
+      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
         <path
           fill="#EA4335"
           d="M12 5c1.54 0 2.9.54 3.98 1.43l2.97-2.97C17.15 1.77 14.77 1 12 1 7.42 1 3.54 3.6 1.63 7.37l3.66 2.84C6.18 7.3 8.87 5 12 5z"
@@ -55,7 +55,7 @@ export default function OAuthButton() {
       </svg>
       <span>{loading ? 'Redirecting to Google...' : 'Continue with Google'}</span>
       {!configured && (
-        <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700">
+        <span className="text-[10px] font-mono bg-surface-raised text-text-muted px-1.5 py-0.2 rounded-sm border border-border-subtle">
           Optional
         </span>
       )}

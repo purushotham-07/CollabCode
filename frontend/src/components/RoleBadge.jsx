@@ -8,22 +8,22 @@ export default function RoleBadge({ role, size = 'sm' }) {
     case 'OWNER':
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-mono font-semibold rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 ${
-            isSm ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs'
+          className={`inline-flex items-center gap-1 font-mono uppercase tracking-wider font-semibold rounded-sm bg-amber-500/10 text-amber-400 border border-amber-500/30 ${
+            isSm ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-xs'
           }`}
         >
-          <Crown className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
+          <Crown className={isSm ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
           <span>Owner</span>
         </span>
       );
     case 'EDITOR':
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-mono font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 ${
-            isSm ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs'
+          className={`inline-flex items-center gap-1 font-mono uppercase tracking-wider font-semibold rounded-sm bg-accent-subtle text-accent border border-accent-border ${
+            isSm ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-xs'
           }`}
         >
-          <Edit3 className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
+          <Edit3 className={isSm ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
           <span>Editor</span>
         </span>
       );
@@ -31,11 +31,11 @@ export default function RoleBadge({ role, size = 'sm' }) {
     default:
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-mono font-semibold rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30 ${
-            isSm ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs'
+          className={`inline-flex items-center gap-1 font-mono uppercase tracking-wider font-semibold rounded-sm bg-surface-subtle text-text-secondary border border-border-default ${
+            isSm ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-xs'
           }`}
         >
-          <Eye className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
+          <Eye className={isSm ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
           <span>Viewer</span>
         </span>
       );

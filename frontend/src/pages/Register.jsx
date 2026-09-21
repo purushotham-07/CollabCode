@@ -4,7 +4,7 @@ import RegisterForm from '../components/auth/RegisterForm';
 
 export default function Register() {
   return (
-    <div className="min-h-screen bg-[#0B0F17] flex flex-col">
+    <div className="min-h-screen bg-surface-canvas flex flex-col selection:bg-accent-subtle selection:text-accent-base">
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <RegisterForm />
