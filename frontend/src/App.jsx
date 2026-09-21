@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
+import WorkspaceView from './pages/WorkspaceView';
+import JoinWorkspace from './pages/JoinWorkspace';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/invite/:token" element={<JoinWorkspace />} />
         
         {/* Protected Application Routes */}
         <Route
@@ -29,6 +32,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workspace/:id"
+          element={
+            <ProtectedRoute>
+              <WorkspaceView />
             </ProtectedRoute>
           }
         />
