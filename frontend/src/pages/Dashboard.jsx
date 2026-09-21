@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../hooks/useAuth';
@@ -9,14 +9,21 @@ import {
   Clock,
   Users,
   Terminal,
+  Search,
+  X,
+  ArrowRight,
 } from 'lucide-react';
 import RoleBadge from '../components/RoleBadge';
 import CreateWorkspaceModal from '../components/CreateWorkspaceModal';
+import { Button } from '../components/ui/Button';
+import { Skeleton, EmptyState } from '../components/ui/Tabs';
+import { AvatarStack } from '../components/ui/Badge';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { workspaces, fetchWorkspaces, createWorkspace, isLoading } = useWorkspaceStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +34,13 @@ export default function Dashboard() {
     const newWs = await createWorkspace(name);
     navigate(`/workspace/${newWs.id}`);
   };
+
+  const filteredWorkspaces = useMemo(() => {
+    if (!searchQuery.trim()) return workspaces;
+    return workspaces.filter((ws) =>
+      ws.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    );
+  }, [workspaces, searchQuery]);
 
   const formatDate = (isoString) => {
     if (!isoString) return 'Just now';
@@ -59,14 +73,37 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <button
-            id="create-workspace-btn"
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-sm bg-accent text-text-on-accent font-medium text-xs hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-120 cursor-pointer self-start sm:self-auto"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>New Workspace</span>
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Search filter input */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search workspaces..."
+                className="pl-8 pr-7 py-1.5 rounded-sm bg-surface-raised border border-border-default text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            <Button
+              id="create-workspace-btn"
+              variant="primary"
+              size="md"
+              leftIcon={<Plus className="w-3.5 h-3.5" />}
+              onClick={() => setIsModalOpen(true)}
+            >
+              New Workspace
+            </Button>
+          </div>
         </div>
 
         {/* Workspaces Grid */}
@@ -74,50 +111,79 @@ export default function Dashboard() {
           {isLoading && workspaces.length === 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-40 rounded-lg bg-surface-raised border border-border-subtle animate-pulse" />
+                <div key={i} className="p-5 rounded-lg bg-surface-raised border border-border-subtle space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="w-8 h-8 rounded-sm" />
+                    <Skeleton className="w-16 h-5 rounded-sm" />
+                  </div>
+                  <Skeleton className="w-3/4 h-5 rounded-sm mt-4" />
+                  <div className="pt-4 border-t border-border-subtle flex items-center justify-between">
+                    <Skeleton className="w-20 h-4 rounded-sm" />
+                    <Skeleton className="w-16 h-4 rounded-sm" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : workspaces.length === 0 ? (
-            <div className="p-12 rounded-lg border border-dashed border-border-default bg-surface-subtle/40 text-center max-w-md mx-auto">
-              <div className="w-12 h-12 rounded-md bg-surface-raised border border-border-default flex items-center justify-center mx-auto mb-3 text-text-muted">
-                <FolderGit2 className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="text-sm font-semibold text-text-primary">No active workspaces</h3>
-              <p className="text-xs text-text-muted mt-1 mb-5">
-                Create a project to begin real-time collaborative editing with your team.
-              </p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 rounded-sm bg-accent text-text-on-accent font-medium text-xs hover:opacity-90 transition-opacity duration-120 cursor-pointer"
-              >
-                Create First Workspace
-              </button>
-            </div>
+            <EmptyState
+              icon={<FolderGit2 className="w-5 h-5 text-accent" />}
+              title="No active workspaces yet"
+              description="Create your first collaborative workspace to start editing code in real time with teammates."
+              action={
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setIsModalOpen(true)}
+                  leftIcon={<Plus className="w-3.5 h-3.5" />}
+                >
+                  Create First Workspace
+                </Button>
+              }
+              className="max-w-md mx-auto my-12"
+            />
+          ) : filteredWorkspaces.length === 0 ? (
+            <EmptyState
+              icon={<Search className="w-5 h-5 text-text-muted" />}
+              title="No matching workspaces"
+              description={`No workspaces found matching "${searchQuery}". Try a different search term.`}
+              action={
+                <Button variant="secondary" size="sm" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              }
+              className="max-w-md mx-auto my-12"
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {workspaces.map((ws) => (
+              {filteredWorkspaces.map((ws) => (
                 <div
                   key={ws.id}
                   onClick={() => navigate(`/workspace/${ws.id}`)}
-                  className="workbench-card group p-5 cursor-pointer border border-border-subtle hover:border-border-hover transition-colors duration-120 flex flex-col justify-between"
+                  className="workbench-card group p-5 cursor-pointer border border-border-subtle hover:border-border-hover transition-colors duration-fast flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <div className="p-2 rounded-sm bg-surface-subtle border border-border-subtle text-accent">
+                      <div className="p-2 rounded-sm bg-surface-subtle border border-border-subtle text-accent group-hover:border-accent transition-colors">
                         <Terminal className="w-4 h-4" />
                       </div>
                       <RoleBadge role={ws.myRole} />
                     </div>
 
-                    <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors duration-120 tracking-tight">
+                    <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors duration-fast tracking-tight">
                       {ws.name}
                     </h3>
                   </div>
 
                   <div className="mt-6 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
-                    <div className="flex items-center gap-1.5 font-mono text-[11px]">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{ws.memberCount} {ws.memberCount === 1 ? 'member' : 'members'}</span>
+                    <div className="flex items-center gap-2">
+                      <AvatarStack
+                        users={ws.members || [{ displayName: user?.displayName }]}
+                        max={3}
+                        size="sm"
+                      />
+                      <span className="font-mono text-[11px]">
+                        {ws.memberCount || 1} {ws.memberCount === 1 ? 'member' : 'members'}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1 text-text-muted font-mono text-[11px]">
