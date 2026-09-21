@@ -1,0 +1,43 @@
+import apiClient from './client';
+
+export const authApi = {
+  login: async (credentials) => {
+    const response = await apiClient.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  register: async (userData) => {
+    const response = await apiClient.post('/auth/register', userData);
+    return response.data;
+  },
+
+  refresh: async () => {
+    const response = await apiClient.post('/auth/refresh');
+    return response.data;
+  },
+
+  logout: async () => {
+    const response = await apiClient.post('/auth/logout');
+    return response.data;
+  },
+
+  getMe: async () => {
+    const response = await apiClient.get('/auth/me');
+    return response.data;
+  },
+
+  getGoogleAuthUrl: async (redirectUri) => {
+    const response = await apiClient.get('/auth/oauth2/google/url', {
+      params: { redirectUri },
+    });
+    return response.data;
+  },
+
+  googleCallback: async (code, redirectUri) => {
+    const response = await apiClient.post('/auth/oauth2/google/callback', {
+      code,
+      redirectUri,
+    });
+    return response.data;
+  },
+};
