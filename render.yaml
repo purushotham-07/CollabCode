@@ -1,13 +1,11 @@
 services:
   - type: web
     name: collabcode-backend
-    runtime: java
+    runtime: docker
     rootDir: backend
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -Xmx384m -XX:+UseSerialGC -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
     envVars:
-      - key: JAVA_VERSION
-        value: 17
       - key: PORT
         value: 10000
       - key: MONGO_URI

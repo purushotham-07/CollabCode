@@ -14,14 +14,13 @@ The repository is configured to support **both zero-config root deployment** and
 
 ### Steps
 1. **Push your repository** to GitHub.
-2. In the [Render Dashboard](https://dashboard.render.com), click **New +** → **Web Service** (or use Blueprint with `render.yaml`).
+2. In the [Render Dashboard](https://dashboard.render.com), click **New +** → **Blueprint** (recommended) or **Web Service**.
 3. Connect your GitHub repository (`CollabCode`).
-4. Configure the service settings:
+4. When using **Blueprint**, Render automatically reads `render.yaml` and builds the Docker image.
+   If configuring manually via **Web Service**:
    - **Name**: `collabcode-backend`
    - **Root Directory**: `backend`
-   - **Runtime**: `Java`
-   - **Build Command**: `./mvnw clean package -DskipTests`
-   - **Start Command**: `java -Xmx384m -XX:+UseSerialGC -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar`
+   - **Runtime**: `Docker`
    - **Instance Type**: `Free`
 5. Under **Environment Variables**, add:
    - `JAVA_VERSION`: `17`
