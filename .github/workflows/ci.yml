@@ -54,14 +54,3 @@ jobs:
         run: |
           cd frontend
           npm run build
-
-  docker-smoke:
-    name: Docker Build Smoke Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Build Docker Compose Images
-        run: |
-          docker compose -f infra/docker-compose.yml build

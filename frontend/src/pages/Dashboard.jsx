@@ -8,16 +8,12 @@ import {
   Plus,
   Clock,
   Users,
-  Terminal,
   Search,
   X,
-  ArrowRight,
+  Folder,
 } from 'lucide-react';
 import RoleBadge from '../components/RoleBadge';
 import CreateWorkspaceModal from '../components/CreateWorkspaceModal';
-import { Button } from '../components/ui/Button';
-import { Skeleton, EmptyState } from '../components/ui/Tabs';
-import { AvatarStack } from '../components/ui/Badge';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -53,134 +49,128 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-canvas text-text-primary flex flex-col selection:bg-accent-subtle selection:text-accent-base">
+    <div className="min-h-screen bg-surface-canvas text-text-primary flex flex-col selection:bg-[#0071e3]/30 selection:text-white transition-colors duration-200">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Workspaces Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border-subtle">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8">
+        {/* Apple-style Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-8 border-b border-border-subtle">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold text-text-primary tracking-tight">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-semibold text-text-primary tracking-tight">
                 Workspaces
               </h1>
-              <span className="text-[11px] font-mono text-text-muted px-2 py-0.5 rounded-sm bg-surface-raised border border-border-subtle">
+              <span className="text-xs font-mono text-text-secondary px-2.5 py-0.5 rounded-full bg-surface-raised border border-border-default">
                 {workspaces.length} active
               </span>
             </div>
-            <p className="text-xs text-text-muted mt-1 font-mono">
-              Signed in as <span className="text-text-secondary">{user?.displayName}</span> ({user?.email})
+            <p className="text-xs text-text-secondary mt-1.5">
+              Signed in as <span className="text-text-primary font-medium">{user?.displayName || 'Developer'}</span> ({user?.email})
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Search filter input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search workspaces..."
-                className="pl-8 pr-7 py-1.5 rounded-sm bg-surface-raised border border-border-default text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition-colors"
+                className="pl-9 pr-8 py-2 rounded-full bg-surface-raised border border-border-default text-xs text-text-primary placeholder-text-muted focus:outline-none focus:border-[#0071e3] w-48 sm:w-60 transition-all shadow-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary p-0.5"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary p-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>
               )}
             </div>
 
-            <Button
+            <button
               id="create-workspace-btn"
-              variant="primary"
-              size="md"
-              leftIcon={<Plus className="w-3.5 h-3.5" />}
               onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-medium transition-all shadow-md shadow-[#0071e3]/20 flex items-center gap-1.5 active:scale-95 cursor-pointer"
             >
-              New Workspace
-            </Button>
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Workspace</span>
+            </button>
           </div>
         </div>
 
         {/* Workspaces Grid */}
-        <div className="mt-6">
+        <div className="mt-8">
           {isLoading && workspaces.length === 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="p-5 rounded-lg bg-surface-raised border border-border-subtle space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="w-8 h-8 rounded-sm" />
-                    <Skeleton className="w-16 h-5 rounded-sm" />
-                  </div>
-                  <Skeleton className="w-3/4 h-5 rounded-sm mt-4" />
-                  <div className="pt-4 border-t border-border-subtle flex items-center justify-between">
-                    <Skeleton className="w-20 h-4 rounded-sm" />
-                    <Skeleton className="w-16 h-4 rounded-sm" />
-                  </div>
+                <div key={i} className="apple-card p-6 animate-pulse space-y-4">
+                  <div className="w-10 h-10 rounded-2xl bg-surface-overlay" />
+                  <div className="w-2/3 h-5 rounded-lg bg-surface-overlay" />
+                  <div className="w-1/2 h-3 rounded-lg bg-surface-overlay" />
                 </div>
               ))}
             </div>
           ) : workspaces.length === 0 ? (
-            <EmptyState
-              icon={<FolderGit2 className="w-5 h-5 text-accent" />}
-              title="No active workspaces yet"
-              description="Create your first collaborative workspace to start editing code in real time with teammates."
-              action={
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setIsModalOpen(true)}
-                  leftIcon={<Plus className="w-3.5 h-3.5" />}
-                >
-                  Create First Workspace
-                </Button>
-              }
-              className="max-w-md mx-auto my-12"
-            />
+            <div className="apple-card p-12 text-center max-w-md mx-auto my-12">
+              <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 border border-[#0071e3]/20 flex items-center justify-center text-[#0071e3] mx-auto mb-4">
+                <FolderGit2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">No active workspaces</h3>
+              <p className="text-xs text-text-secondary leading-relaxed mb-6">
+                Create your first cloud workspace to begin organizing files and collaborating in the studio.
+              </p>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-6 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-medium transition-all shadow-md inline-flex items-center gap-2 cursor-pointer active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create Workspace</span>
+              </button>
+            </div>
           ) : filteredWorkspaces.length === 0 ? (
-            <EmptyState
-              icon={<Search className="w-5 h-5 text-text-muted" />}
-              title="No matching workspaces"
-              description={`No workspaces found matching "${searchQuery}". Try a different search term.`}
-              action={
-                <Button variant="secondary" size="sm" onClick={() => setSearchQuery('')}>
-                  Clear Search
-                </Button>
-              }
-              className="max-w-md mx-auto my-12"
-            />
+            <div className="apple-card p-10 text-center max-w-md mx-auto my-12">
+              <Search className="w-6 h-6 text-text-muted mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-text-primary mb-1">No matching workspaces</h3>
+              <p className="text-xs text-text-secondary mb-4">
+                No workspaces match "{searchQuery}".
+              </p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-4 py-1.5 rounded-full bg-surface-raised border border-border-default hover:bg-surface-overlay text-xs text-text-primary"
+              >
+                Clear Search
+              </button>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredWorkspaces.map((ws) => (
                 <div
                   key={ws.id}
                   onClick={() => navigate(`/workspace/${ws.id}`)}
-                  className="workbench-card group p-5 cursor-pointer border border-border-subtle hover:border-border-hover transition-colors duration-fast flex flex-col justify-between"
+                  className="apple-card p-6 cursor-pointer flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <div className="p-2 rounded-sm bg-surface-subtle border border-border-subtle text-accent group-hover:border-accent transition-colors">
-                        <Terminal className="w-4 h-4" />
+                    <div className="flex items-start justify-between gap-2 mb-4">
+                      <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 border border-[#0071e3]/20 flex items-center justify-center text-[#0071e3] group-hover:scale-105 transition-transform">
+                        <Folder className="w-5 h-5 fill-[#0071e3]/20" />
                       </div>
                       <RoleBadge role={ws.myRole} />
                     </div>
 
-                    <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors duration-fast tracking-tight">
+                    <h3 className="text-base font-semibold text-text-primary group-hover:text-[#0071e3] transition-colors tracking-tight">
                       {ws.name}
                     </h3>
+                    <p className="text-xs text-text-secondary mt-1 line-clamp-2">
+                      {ws.description || 'Cloud workspace project'}
+                    </p>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
-                    <div className="flex items-center gap-2">
-                      <AvatarStack
-                        users={ws.members || [{ displayName: user?.displayName }]}
-                        max={3}
-                        size="sm"
-                      />
+                  <div className="mt-6 pt-4 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-text-muted" />
                       <span className="font-mono text-[11px]">
                         {ws.memberCount || 1} {ws.memberCount === 1 ? 'member' : 'members'}
                       </span>

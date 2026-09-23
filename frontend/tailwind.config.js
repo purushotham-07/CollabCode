@@ -35,22 +35,31 @@ export default {
           subtle: 'var(--accent-subtle)',
           border: 'var(--accent-border)',
         },
+        apple: {
+          blue: '#0071e3',
+          blueHover: '#0077ed',
+          dark: '#000000',
+          surface: '#121215',
+          card: 'rgba(255, 255, 255, 0.04)',
+          border: 'rgba(255, 255, 255, 0.08)',
+          gray: '#86868b',
+          light: '#f5f5f7',
+        },
         status: {
           success: 'var(--status-success)',
           warning: 'var(--status-warning)',
           danger: 'var(--status-danger)',
           info: 'var(--status-info)',
         },
-        // 8 distinct, accessible collaborator colors for cursors & presence
         peer: {
-          1: '#10b981', // Emerald
-          2: '#0ea5e9', // Sky
-          3: '#f59e0b', // Amber
-          4: '#f43f5e', // Rose
-          5: '#8b5cf6', // Violet
-          6: '#06b6d4', // Cyan
-          7: '#f97316', // Orange
-          8: '#14b8a6', // Teal
+          1: '#10b981',
+          2: '#0ea5e9',
+          3: '#f59e0b',
+          4: '#f43f5e',
+          5: '#8b5cf6',
+          6: '#06b6d4',
+          7: '#f97316',
+          8: '#14b8a6',
         },
         editor: {
           bg: 'var(--surface-canvas)',
@@ -61,14 +70,17 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Geist Sans', 'Geist Sans Fallback', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['Geist Sans', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'SF Mono', 'Fira Code', 'monospace'],
       },
       borderRadius: {
         none: '0px',
-        sm: '6px',
-        md: '10px',
+        sm: '8px',
+        md: '12px',
         lg: '16px',
+        xl: '20px',
+        '2xl': '24px',
+        '3xl': '32px',
         full: '9999px',
       },
       boxShadow: {
@@ -76,9 +88,12 @@ export default {
         'soft-md': 'var(--shadow-md)',
         'soft-lg': 'var(--shadow-lg)',
         'soft-overlay': 'var(--shadow-overlay)',
+        'apple-card': '0 8px 30px rgba(0, 0, 0, 0.28)',
+        'apple-glow': '0 0 50px -10px rgba(0, 113, 227, 0.3)',
       },
       transitionTimingFunction: {
         workbench: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        apple: 'cubic-bezier(0.25, 1, 0.5, 1)',
       },
       transitionDuration: {
         fast: '150ms',

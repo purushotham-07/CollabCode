@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import FileIcon from './FileIcon';
+import ConfirmModal from './ui/ConfirmModal';
 
 export default function FileTree({
   files = [],
@@ -19,6 +20,7 @@ export default function FileTree({
   onRenameFile,
   onDeleteFile,
   canEdit = true,
+  width,
 }) {
   const [openFolders, setOpenFolders] = useState(new Set(['src']));
   const [creatingType, setCreatingType] = useState(null); // 'file' | 'folder' | null
@@ -26,6 +28,7 @@ export default function FileTree({
   const [newItemName, setNewItemName] = useState('');
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   // Transform flat file list into hierarchical tree
   const tree = useMemo(() => {
@@ -217,13 +220,16 @@ export default function FileTree({
                   <Edit2 className="w-3 h-3" />
                 </button>
                 <button
-                  onClick={() => {
-                    if (confirm(`Delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}"?`)) {
-                      onDeleteFile(node.file.id);
-                    }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteTarget({
+                      id: node.file.id,
+                      name: node.name,
+                      isDirectory: node.isDirectory,
+                    });
                   }}
                   title="Delete"
-                  className="p-0.5 hover:text-red-400 rounded-sm hover:bg-surface-raised"
+                  className="p-0.5 hover:text-red-400 rounded-sm hover:bg-surface-raised cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -269,7 +275,12 @@ export default function FileTree({
   };
 
   return (
-    <div className="flex flex-col h-full bg-surface-subtle border-r border-border-subtle w-60 select-none">
+    <div
+      style={width ? { width: `${width}px` } : undefined}
+      className={`flex flex-col h-full bg-surface-subtle border-r border-border-subtle flex-shrink-0 select-none ${
+        !width ? 'w-60' : ''
+      }`}
+    >
       {/* File Tree Header */}
       <div className="h-9 px-3 border-b border-border-subtle flex items-center justify-between">
         <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted font-mono">
@@ -330,6 +341,23 @@ export default function FileTree({
           renderTreeNodes(tree)
         )}
       </div>
+
+      {/* Apple-style Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            onDeleteFile(deleteTarget.id);
+            setDeleteTarget(null);
+          }
+        }}
+        title={`Delete ${deleteTarget?.isDirectory ? 'Folder' : 'File'}`}
+        message={`Are you sure you want to permanently delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Zero-CLS Fallback Metrics for Geist Sans */
 @font-face {
   font-family: 'Geist Sans Fallback';
   src: local('Arial');
@@ -12,138 +11,184 @@
   size-adjust: 101%;
 }
 
-:root, .dark {
-  /* Slate Canvas & Layered Elevation (Soft off-black slate, never #000) */
-  --surface-canvas:  oklch(0.14 0.008 260);
-  --surface-subtle:  oklch(0.17 0.010 260);
-  --surface-raised:  oklch(0.20 0.012 260);
-  --surface-overlay: oklch(0.24 0.014 260);
-  --surface-active:  oklch(0.28 0.016 260);
+:root {
+  /* Apple.com Production Palette (Light Mode Default) */
+  --surface-canvas:  #f5f5f7;
+  --surface-subtle:  #ffffff;
+  --surface-raised:  #ffffff;
+  --surface-overlay: rgba(0, 0, 0, 0.04);
+  --surface-active:  #e8e8ed;
 
-  /* Hairline Architectural Borders */
-  --border-subtle:  oklch(0.26 0.010 260 / 0.7);
-  --border-default: oklch(0.32 0.012 260);
-  --border-hover:   oklch(0.44 0.016 260);
-  --border-focus:   oklch(0.72 0.17 155);
+  --border-subtle:  rgba(0, 0, 0, 0.08);
+  --border-default: rgba(0, 0, 0, 0.14);
+  --border-hover:   rgba(0, 0, 0, 0.26);
+  --border-focus:   #0071e3;
 
-  /* High-Legibility Typography (Contrast Certified) */
-  --text-primary:   oklch(0.97 0.004 260);
-  --text-secondary: oklch(0.76 0.010 260);
-  --text-muted:     oklch(0.58 0.014 260);
-  --text-on-accent: oklch(0.12 0.008 260);
+  --text-primary:   #1d1d1f;
+  --text-secondary: #86868b;
+  --text-muted:     #6e6e73;
+  --text-on-accent: #ffffff;
 
-  /* Signal Accent: Precision Emerald */
-  --accent-base:    oklch(0.72 0.17 155);
-  --accent-hover:   oklch(0.78 0.18 155);
-  --accent-active:  oklch(0.66 0.16 155);
-  --accent-subtle:  oklch(0.22 0.05 155);
-  --accent-border:  oklch(0.38 0.10 155);
+  --accent-base:    #0071e3;
+  --accent-hover:   #0077ed;
+  --accent-active:  #006edb;
+  --accent-subtle:  rgba(0, 113, 227, 0.08);
+  --accent-border:  rgba(0, 113, 227, 0.25);
 
-  /* Semantic Feedback Tokens */
-  --status-success: oklch(0.72 0.17 155);
-  --status-warning: oklch(0.78 0.16 75);
-  --status-danger:  oklch(0.65 0.22 25);
-  --status-info:    oklch(0.72 0.14 235);
+  --status-success: #34c759;
+  --status-warning: #ff9500;
+  --status-danger:  #ff3b30;
+  --status-info:    #007aff;
 
-  /* Soft Layered Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.35), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.45), 0 4px 12px -2px rgba(0, 0, 0, 0.30);
-  --shadow-overlay: 0 24px 48px -8px rgba(0, 0, 0, 0.55), 0 8px 16px -4px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+  --shadow-overlay: 0 28px 60px rgba(0, 0, 0, 0.12);
 }
 
-.light {
-  --surface-canvas:  oklch(0.985 0.004 260);
-  --surface-subtle:  oklch(0.960 0.006 260);
-  --surface-raised:  oklch(1.000 0.000 0);
-  --surface-overlay: oklch(0.940 0.008 260);
-  --surface-active:  oklch(0.910 0.010 260);
+html.dark {
+  /* Apple.com Production Palette (Dark Mode) */
+  --surface-canvas:  #000000;
+  --surface-subtle:  #0d0d0f;
+  --surface-raised:  #161617;
+  --surface-overlay: rgba(255, 255, 255, 0.06);
+  --surface-active:  #1d1d1f;
 
-  --border-subtle:  oklch(0.880 0.006 260 / 0.8);
-  --border-default: oklch(0.820 0.010 260);
-  --border-hover:   oklch(0.650 0.014 260);
-  --border-focus:   oklch(0.550 0.16 155);
+  --border-subtle:  rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.14);
+  --border-hover:   rgba(255, 255, 255, 0.28);
+  --border-focus:   #0071e3;
 
-  --text-primary:   oklch(0.16 0.012 260);
-  --text-secondary: oklch(0.38 0.014 260);
-  --text-muted:     oklch(0.52 0.012 260);
-  --text-on-accent: oklch(0.99 0.002 260);
+  --text-primary:   #f5f5f7;
+  --text-secondary: #86868b;
+  --text-muted:     #6e6e73;
+  --text-on-accent: #ffffff;
 
-  --accent-base:    oklch(0.55 0.16 155);
-  --accent-hover:   oklch(0.48 0.16 155);
-  --accent-active:  oklch(0.42 0.15 155);
-  --accent-subtle:  oklch(0.92 0.04 155);
-  --accent-border:  oklch(0.78 0.08 155);
+  --accent-base:    #0071e3;
+  --accent-hover:   #0077ed;
+  --accent-active:  #006edb;
+  --accent-subtle:  rgba(0, 113, 227, 0.12);
+  --accent-border:  rgba(0, 113, 227, 0.35);
 
-  --status-success: oklch(0.55 0.16 155);
-  --status-warning: oklch(0.68 0.16 75);
-  --status-danger:  oklch(0.58 0.22 25);
-  --status-info:    oklch(0.55 0.14 235);
+  --status-success: #30d158;
+  --status-warning: #ff9f0a;
+  --status-danger:  #ff453a;
+  --status-info:    #0a84ff;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
-  --shadow-overlay: 0 24px 48px -8px rgba(0, 0, 0, 0.16), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-overlay: 0 28px 60px rgba(0, 0, 0, 0.85);
 }
 
 @layer base {
   body {
     background-color: var(--surface-canvas);
     color: var(--text-primary);
-    font-family: 'Geist Sans', 'Geist Sans Fallback', system-ui, -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Geist Sans', system-ui, sans-serif;
+    letter-spacing: -0.011em;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Accessible Focus Rings */
+/* Exact Apple Frosted Glass Header Bar */
+.apple-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html.dark .apple-nav {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Apple Frosted Glass Panel */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html.dark .apple-glass {
+  background: rgba(22, 22, 23, 0.8);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Apple Hardware / Product Feature Card */
+.apple-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  transition: all 240ms cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.apple-card:hover {
+  border-color: rgba(0, 0, 0, 0.16);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+html.dark .apple-card {
+  background: #161617;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+html.dark .apple-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Apple Titanium / Silver Headline Gradient */
+.apple-headline-gradient {
+  background: linear-gradient(180deg, #1d1d1f 20%, #86868b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.dark .apple-headline-gradient {
+  background: linear-gradient(180deg, #ffffff 20%, #a1a1a6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Focus Rings */
 .focus-ring {
   outline: none;
 }
 .focus-ring:focus-visible {
-  outline: 2px solid var(--accent-base);
+  outline: 2px solid #0071e3;
   outline-offset: 2px;
 }
 
-/* Layered Workbench Surface Cards */
-.workbench-card {
-  background-color: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-}
-
-.workbench-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: var(--shadow-md);
-}
-
-/* Reduced Motion Compliance */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Custom Workbench Hairline Scrollbars */
+/* Clean Hairline Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--surface-canvas);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }

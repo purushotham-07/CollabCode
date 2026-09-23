@@ -61,7 +61,7 @@ export function CommandPalette({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg rounded-lg bg-surface-overlay border border-border-default shadow-soft-overlay overflow-hidden animate-in zoom-in-95 duration-fast text-left">
+      <div className="relative w-full max-w-lg rounded-2xl bg-surface-raised border border-border-default shadow-2xl overflow-hidden animate-in zoom-in-95 duration-fast text-left">
         {/* Search Input Bar */}
         <div className="flex items-center px-3.5 py-2.5 border-b border-border-subtle gap-2.5">
           <Search className="w-4 h-4 text-text-muted flex-shrink-0" />

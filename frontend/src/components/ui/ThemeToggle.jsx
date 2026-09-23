@@ -18,6 +18,7 @@ export function ThemeToggle({ className = '' }) {
       root.classList.add('dark');
     }
     localStorage.setItem('collabcode_theme', theme);
+    window.dispatchEvent(new CustomEvent('collabcode_theme_change', { detail: theme }));
   }, [theme]);
 
   const toggleTheme = () => {
@@ -29,9 +30,13 @@ export function ThemeToggle({ className = '' }) {
       onClick={toggleTheme}
       type="button"
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className={`p-1.5 rounded-sm text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-fast focus-ring ${className}`}
+      className={`p-1.5 rounded-full text-[#86868b] hover:text-text-primary hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-colors focus-ring cursor-pointer ${className}`}
     >
-      {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+      {theme === 'dark' ? (
+        <Sun className="w-3.5 h-3.5 text-[#ff9f0a]" />
+      ) : (
+        <Moon className="w-3.5 h-3.5 text-[#1d1d1f]" />
+      )}
     </button>
   );
 }

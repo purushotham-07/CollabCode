@@ -68,6 +68,7 @@ public class AuthService {
         return createAuthResult(user, UUID.randomUUID().toString());
     }
 
+
     @Transactional
     public AuthResult refresh(String rawRefreshToken) {
         if (rawRefreshToken == null || rawRefreshToken.isBlank()) {

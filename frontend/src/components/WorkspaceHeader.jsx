@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Share2, Trash2, Terminal, Command, MessageSquare, HelpCircle } from 'lucide-react';
 import RoleBadge from './RoleBadge';
 import { Kbd } from './ui/Badge';
+import ConfirmModal from './ui/ConfirmModal';
 
 export default function WorkspaceHeader({
   workspace,
@@ -14,6 +15,7 @@ export default function WorkspaceHeader({
   isChatOpen = false,
   unreadCount = 0,
 }) {
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isOwner = myRole === 'OWNER';
   const canInvite = myRole === 'OWNER' || myRole === 'EDITOR';
 
@@ -109,18 +111,28 @@ export default function WorkspaceHeader({
         {/* Delete Workspace Button (Owner Only) */}
         {isOwner && (
           <button
-            onClick={() => {
-              if (confirm(`Permanently delete workspace "${workspace?.name}" and all its files?`)) {
-                onDeleteWorkspace();
-              }
-            }}
+            onClick={() => setIsDeleteOpen(true)}
             title="Delete Workspace"
-            className="p-1 rounded-sm text-text-muted hover:text-status-danger hover:bg-surface-raised transition-colors"
+            className="p-1 rounded-sm text-text-muted hover:text-status-danger hover:bg-surface-raised transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={() => {
+          setIsDeleteOpen(false);
+          onDeleteWorkspace();
+        }}
+        title="Delete Workspace"
+        message={`Are you sure you want to permanently delete workspace "${workspace?.name}" and all its files? This action cannot be undone.`}
+        confirmText="Delete Workspace"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </header>
   );
 }

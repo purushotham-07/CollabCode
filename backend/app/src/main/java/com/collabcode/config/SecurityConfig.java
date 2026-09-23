@@ -55,7 +55,11 @@ public class SecurityConfig {
             "http://localhost",
             "http://localhost:*",
             "https://localhost",
-            "https://localhost:*"
+            "https://localhost:*",
+            "https://*.vercel.app",
+            "http://*.vercel.app",
+            "https://*.onrender.com",
+            "*"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

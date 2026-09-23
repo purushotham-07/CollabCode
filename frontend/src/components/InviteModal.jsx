@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Copy, Check, UserPlus, Users, Trash2 } from 'lucide-react';
 import { workspaceApi } from '../api/workspace';
 import RoleBadge from './RoleBadge';
+import ConfirmModal from './ui/ConfirmModal';
 
 export default function InviteModal({
   workspace,
@@ -17,6 +18,7 @@ export default function InviteModal({
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState('invite'); // 'invite' | 'members'
+  const [memberToRemove, setMemberToRemove] = useState(null);
 
   if (!isOpen) return null;
 
@@ -208,12 +210,8 @@ export default function InviteModal({
 
                   {isOwner && m.role !== 'OWNER' && (
                     <button
-                      onClick={() => {
-                        if (confirm(`Remove ${m.displayName} from this workspace?`)) {
-                          onRemoveMember(m.userId);
-                        }
-                      }}
-                      className="p-1 text-text-muted hover:text-red-400 transition-colors duration-120"
+                      onClick={() => setMemberToRemove(m)}
+                      className="p-1 text-text-muted hover:text-red-400 transition-colors duration-120 cursor-pointer"
                       title="Remove member"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -225,6 +223,22 @@ export default function InviteModal({
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={Boolean(memberToRemove)}
+        onClose={() => setMemberToRemove(null)}
+        onConfirm={() => {
+          if (memberToRemove) {
+            onRemoveMember(memberToRemove.userId);
+            setMemberToRemove(null);
+          }
+        }}
+        title="Remove Member"
+        message={`Are you sure you want to remove ${memberToRemove?.displayName} from this workspace?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }
