@@ -2,6 +2,7 @@ services:
   - type: web
     name: collabcode-backend
     runtime: docker
+    plan: free
     rootDir: backend
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
