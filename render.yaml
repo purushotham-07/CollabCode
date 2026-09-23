@@ -4,7 +4,7 @@ services:
     runtime: java
     rootDir: backend
     buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar
+    startCommand: java -Xmx384m -XX:+UseSerialGC -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar
     envVars:
       - key: JAVA_VERSION
         value: 17

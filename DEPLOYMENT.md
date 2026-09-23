@@ -21,7 +21,7 @@ The repository is configured to support **both zero-config root deployment** and
    - **Root Directory**: `backend`
    - **Runtime**: `Java`
    - **Build Command**: `./mvnw clean package -DskipTests`
-   - **Start Command**: `java -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar`
+   - **Start Command**: `java -Xmx384m -XX:+UseSerialGC -jar app/target/collabcode-app-1.0.0-SNAPSHOT.jar`
    - **Instance Type**: `Free`
 5. Under **Environment Variables**, add:
    - `JAVA_VERSION`: `17`
