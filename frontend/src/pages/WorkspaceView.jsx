@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { useWorkspaceStore } from '../store/workspaceStore';
 import { useFileStore } from '../store/fileStore';
+import { useAuthStore } from '../store/authStore';
+import { getWebSocketUrl } from '../utils/websocket';
 import WorkspaceHeader from '../components/WorkspaceHeader';
 import FileTree from '../components/FileTree';
 import FileIcon from '../components/FileIcon';
@@ -76,6 +78,22 @@ export default function WorkspaceView() {
   const [isSaving, setIsSaving] = useState(false);
   const [savedFeedback, setSavedFeedback] = useState(false);
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+
+  const { user } = useAuthStore();
+  const wsRef = useRef(null);
+  const isRemoteUpdateRef = useRef(false);
+  const activeFileIdRef = useRef(activeFileId);
+  const sendDebounceRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
+
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
+
+  useEffect(() => {
+    activeFileIdRef.current = activeFileId;
+  }, [activeFileId]);
 
   // Resizable Panels & Docking State
   const [panelDock, setPanelDock] = useState(() => {
@@ -210,6 +228,145 @@ export default function WorkspaceView() {
     }
   }, [workspaceId, fetchWorkspace, fetchFiles, navigate]);
 
+  // Real-time Collaboration WebSocket Connection (Code edit sync, messages, tree refresh, presence)
+  useEffect(() => {
+    if (!workspaceId) return;
+
+    let isMounted = true;
+
+    const connectWebSocket = () => {
+      if (
+        wsRef.current &&
+        (wsRef.current.readyState === WebSocket.OPEN ||
+          wsRef.current.readyState === WebSocket.CONNECTING)
+      ) {
+        return;
+      }
+
+      try {
+        const currentUser = useAuthStore.getState().user;
+        const wsUrl = getWebSocketUrl(workspaceId, currentUser);
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          if (!isMounted) return;
+          setWsConnected(true);
+          // Explicit join handshake
+          ws.send(
+            JSON.stringify({
+              type: 'JOIN',
+              workspaceId,
+              userId: currentUser?.id,
+              userName: currentUser?.displayName || currentUser?.name || 'Anonymous',
+              avatarUrl: currentUser?.avatarUrl,
+            })
+          );
+        };
+
+        ws.onmessage = (event) => {
+          if (!isMounted) return;
+          try {
+            const data = JSON.parse(event.data);
+            switch (data.type) {
+              case 'CODE_CHANGE': {
+                // If code change is for current open file, update editor content
+                if (data.fileId === activeFileIdRef.current) {
+                  isRemoteUpdateRef.current = true;
+                  setEditorContent(data.content || '');
+                }
+                // Always update content in file store cache so inactive files stay updated
+                useFileStore.setState((state) => ({
+                  files: state.files.map((f) =>
+                    f.id === data.fileId ? { ...f, content: data.content } : f
+                  ),
+                }));
+                break;
+              }
+              case 'CHAT_MESSAGE': {
+                const currentUser = useAuthStore.getState().user;
+                const msg = data.message;
+                const isMe =
+                  msg.senderId === currentUser?.id ||
+                  (currentUser?.displayName && msg.author === currentUser.displayName);
+                setChatMessages((prev) => {
+                  if (prev.some((m) => String(m.id) === String(msg.id))) {
+                    return prev;
+                  }
+                  return [...prev, { ...msg, isMe }];
+                });
+                if (!isSidePanelOpen || sidePanelTab !== 'chat') {
+                  setUnreadChatCount((count) => count + 1);
+                }
+                break;
+              }
+              case 'CHAT_HISTORY': {
+                const currentUser = useAuthStore.getState().user;
+                const history = (data.messages || []).map((m) => ({
+                  ...m,
+                  isMe:
+                    m.senderId === currentUser?.id ||
+                    (currentUser?.displayName && m.author === currentUser.displayName),
+                }));
+                setChatMessages(history);
+                break;
+              }
+              case 'FILE_TREE_CHANGE': {
+                fetchFiles(workspaceId);
+                break;
+              }
+              case 'PRESENCE_UPDATE': {
+                if (Array.isArray(data.users)) {
+                  setOnlineUsers(data.users);
+                }
+                break;
+              }
+              default:
+                break;
+            }
+          } catch (err) {
+            console.error('Failed to parse WebSocket message', err);
+          }
+        };
+
+        ws.onclose = () => {
+          if (!isMounted) return;
+          setWsConnected(false);
+          reconnectTimeoutRef.current = setTimeout(() => {
+            if (isMounted) connectWebSocket();
+          }, 2500);
+        };
+
+        ws.onerror = () => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.close();
+          }
+        };
+      } catch (e) {
+        console.error('WebSocket connection error:', e);
+      }
+    };
+
+    connectWebSocket();
+
+    heartbeatIntervalRef.current = setInterval(() => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'PING' }));
+      }
+    }, 25000);
+
+    return () => {
+      isMounted = false;
+      if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+      if (heartbeatIntervalRef.current) clearInterval(heartbeatIntervalRef.current);
+      if (sendDebounceRef.current) clearTimeout(sendDebounceRef.current);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+    };
+  }, [workspaceId, fetchFiles, isSidePanelOpen, sidePanelTab]);
+
   const activeFile = files.find((f) => f.id === activeFileId);
   const myRole = currentWorkspace?.myRole || 'VIEWER';
   const canEdit = myRole === 'OWNER' || myRole === 'EDITOR';
@@ -302,15 +459,95 @@ export default function WorkspaceView() {
   const handleSendChat = (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
-    const msg = {
-      id: Date.now(),
-      author: 'You',
-      isMe: true,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: chatInput.trim(),
+
+    const text = chatInput.trim();
+    const author = user?.displayName || user?.name || 'You';
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const msgPayload = {
+      id: Date.now().toString(),
+      author,
+      text,
+      time,
+      senderId: user?.id || 'anon',
+      avatarUrl: user?.avatarUrl,
     };
-    setChatMessages((prev) => [...prev, msg]);
+
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'CHAT_MESSAGE',
+          workspaceId,
+          message: msgPayload,
+        })
+      );
+    } else {
+      setChatMessages((prev) => [...prev, { ...msgPayload, isMe: true }]);
+    }
+
     setChatInput('');
+  };
+
+  const handleEditorChange = (newVal) => {
+    const val = newVal ?? '';
+    if (!canEdit) return;
+
+    if (isRemoteUpdateRef.current) {
+      isRemoteUpdateRef.current = false;
+      return;
+    }
+
+    setEditorContent(val);
+
+    // Update in local file store state so tabs switch seamlessly
+    useFileStore.setState((state) => ({
+      files: state.files.map((f) => (f.id === activeFileId ? { ...f, content: val } : f)),
+    }));
+
+    // Broadcast real-time CODE_CHANGE over WebSocket
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && activeFileId) {
+      clearTimeout(sendDebounceRef.current);
+      sendDebounceRef.current = setTimeout(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(
+            JSON.stringify({
+              type: 'CODE_CHANGE',
+              workspaceId,
+              fileId: activeFileId,
+              content: val,
+            })
+          );
+        }
+      }, 25);
+    }
+  };
+
+  const handleCreateFile = async (req) => {
+    const newFile = await createFile(workspaceId, req);
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: 'FILE_TREE_CHANGE', workspaceId, action: 'CREATE' }));
+    }
+    return newFile;
+  };
+
+  const handleRenameFile = async (fileId, newPath) => {
+    await renameFile(workspaceId, fileId, newPath);
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: 'FILE_TREE_CHANGE', workspaceId, action: 'RENAME' }));
+    }
+  };
+
+  const handleDeleteFile = async (fileId) => {
+    await deleteFile(workspaceId, fileId);
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: 'FILE_TREE_CHANGE', workspaceId, action: 'DELETE' }));
+    }
+  };
+
+  const openChatTab = () => {
+    setIsSidePanelOpen(true);
+    setSidePanelTab('chat');
+    setUnreadChatCount(0);
   };
 
   // Detect file language for Monaco Editor
@@ -658,6 +895,29 @@ export default function WorkspaceView() {
             </button>
           )}
 
+          {/* Online Collaborators Presence */}
+          <div
+            onClick={() => setIsInviteOpen(true)}
+            className="flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-full bg-surface-raised border border-border-default hover:bg-surface-active transition-all"
+            title="Active Collaborators (Click to invite)"
+          >
+            <div className="flex -space-x-1.5 overflow-hidden">
+              {(onlineUsers.length > 0 ? onlineUsers : (currentWorkspace?.members || [])).slice(0, 4).map((u, i) => (
+                <div
+                  key={u.sessionId || u.userId || i}
+                  className="w-5 h-5 rounded-full bg-[#0071e3]/20 border border-surface-subtle flex items-center justify-center text-[10px] font-semibold text-[#0071e3]"
+                  title={u.userName || u.displayName || 'Collaborator'}
+                >
+                  {(u.userName || u.displayName || 'U').charAt(0).toUpperCase()}
+                </div>
+              ))}
+            </div>
+            <span className="flex items-center gap-1 text-[11px] font-medium text-text-secondary">
+              <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#30d158] animate-pulse' : 'bg-yellow-500'}`} />
+              <span className="hidden sm:inline">{onlineUsers.length || 1} online</span>
+            </span>
+          </div>
+
           {/* Invite Button */}
           <button
             onClick={() => setIsInviteOpen(true)}
@@ -665,6 +925,24 @@ export default function WorkspaceView() {
           >
             <UserPlus className="w-3 h-3" />
             <span className="hidden sm:inline">Invite</span>
+          </button>
+
+          {/* Chat Quick Button with unread badge */}
+          <button
+            onClick={openChatTab}
+            className={`relative p-1.5 rounded-full border transition-all ${
+              isSidePanelOpen && sidePanelTab === 'chat'
+                ? 'bg-[#0071e3] text-white border-[#0071e3]'
+                : 'bg-surface-raised border-border-default text-text-secondary hover:text-text-primary'
+            }`}
+            title="Messages"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            {unreadChatCount > 0 && !(isSidePanelOpen && sidePanelTab === 'chat') && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff3b30] text-white text-[9px] font-bold flex items-center justify-center shadow animate-pulse">
+                {unreadChatCount > 9 ? '9+' : unreadChatCount}
+              </span>
+            )}
           </button>
 
           {/* Toggle Panel Button */}
@@ -690,9 +968,9 @@ export default function WorkspaceView() {
           files={files}
           activeFileId={activeFileId}
           onSelectFile={setActiveFile}
-          onCreateFile={(req) => createFile(workspaceId, req)}
-          onRenameFile={(fileId, newPath) => renameFile(workspaceId, fileId, newPath)}
-          onDeleteFile={(fileId) => deleteFile(workspaceId, fileId)}
+          onCreateFile={handleCreateFile}
+          onRenameFile={handleRenameFile}
+          onDeleteFile={handleDeleteFile}
           canEdit={canEdit}
         />
 
@@ -767,9 +1045,7 @@ export default function WorkspaceView() {
                   theme={isDark ? 'vs-dark' : 'light'}
                   language={getLanguage(activeFile.name)}
                   value={editorContent}
-                  onChange={(val) => {
-                    if (canEdit) setEditorContent(val || '');
-                  }}
+                  onChange={handleEditorChange}
                   options={{
                     readOnly: !canEdit,
                     minimap: { enabled: false },
@@ -832,11 +1108,11 @@ export default function WorkspaceView() {
           <footer className="h-6 border-t border-border-subtle bg-surface-subtle px-3 flex items-center justify-between text-[11px] font-mono text-text-secondary select-none flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#30d158]" />
-                <span className="text-text-secondary">Ready</span>
+                <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#30d158]' : 'bg-[#ff9f0a]'}`} />
+                <span className="text-text-secondary">{wsConnected ? 'Real-Time Sync Active' : 'Connecting Sync...'}</span>
               </div>
               <span className="text-border-default">|</span>
-              <span>Cloud: Connected</span>
+              <span>{onlineUsers.length || 1} Collaborator{(onlineUsers.length || 1) === 1 ? '' : 's'} Online</span>
             </div>
 
             <div className="flex items-center gap-3">

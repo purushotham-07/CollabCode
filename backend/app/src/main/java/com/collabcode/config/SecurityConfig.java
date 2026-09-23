@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/invites/**").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
-                .requestMatchers("/ws/**").permitAll() // WebSocket handshake handles its own token validation
+                .requestMatchers("/ws", "/ws/**").permitAll() // WebSocket handshake handles its own connection
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

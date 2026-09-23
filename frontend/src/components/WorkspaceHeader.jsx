@@ -14,10 +14,14 @@ export default function WorkspaceHeader({
   onToggleChat,
   isChatOpen = false,
   unreadCount = 0,
+  onlineUsers = [],
 }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isOwner = myRole === 'OWNER';
   const canInvite = myRole === 'OWNER' || myRole === 'EDITOR';
+
+  const activeList = onlineUsers.length > 0 ? onlineUsers : (workspace?.members || []);
+  const displayCount = onlineUsers.length > 0 ? onlineUsers.length : (workspace?.members?.length || 1);
 
   return (
     <header className="h-11 border-b border-border-subtle bg-surface-subtle px-3.5 flex items-center justify-between select-none">
@@ -65,17 +69,19 @@ export default function WorkspaceHeader({
           title="View and manage members"
         >
           <div className="flex -space-x-1 overflow-hidden font-mono text-[9px]">
-            {workspace?.members?.slice(0, 4).map((m, idx) => (
+            {activeList.slice(0, 4).map((m, idx) => (
               <div
-                key={m.userId || idx}
+                key={m.sessionId || m.userId || idx}
                 className="w-5 h-5 rounded-sm bg-surface-raised border border-border-default flex items-center justify-center font-semibold text-text-secondary"
+                title={m.userName || m.displayName || 'Collaborator'}
               >
-                {m.displayName ? m.displayName.charAt(0).toUpperCase() : 'U'}
+                {(m.userName || m.displayName || 'U').charAt(0).toUpperCase()}
               </div>
             ))}
           </div>
-          <span className="text-[11px] font-mono text-text-muted hidden md:inline">
-            {workspace?.members?.length || 1} online
+          <span className="flex items-center gap-1 text-[11px] font-mono text-text-muted hidden md:inline-flex">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] inline-block animate-pulse" />
+            {displayCount} online
           </span>
         </div>
 
