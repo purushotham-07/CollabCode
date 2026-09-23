@@ -42,8 +42,25 @@ public class GoogleOAuthService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
+    private String cleanValue(String val) {
+        if (val == null) return "";
+        val = val.trim();
+        if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.substring(1, val.length() - 1).trim();
+        }
+        return val;
+    }
+
+    public String getClientId() {
+        return cleanValue(clientId);
+    }
+
+    public String getClientSecret() {
+        return cleanValue(clientSecret);
+    }
+
     public boolean isConfigured() {
-        return clientId != null && !clientId.isBlank() && clientSecret != null && !clientSecret.isBlank();
+        return !getClientId().isBlank() && !getClientSecret().isBlank();
     }
 
     public String getAuthorizationUrl(String customRedirectUri) {
@@ -54,7 +71,7 @@ public class GoogleOAuthService {
         String redirectUri = (customRedirectUri != null && !customRedirectUri.isBlank()) ? customRedirectUri : defaultRedirectUri;
 
         return UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
-                .queryParam("client_id", clientId)
+                .queryParam("client_id", getClientId())
                 .queryParam("redirect_uri", redirectUri)
                 .queryParam("response_type", "code")
                 .queryParam("scope", "openid email profile")
@@ -75,8 +92,8 @@ public class GoogleOAuthService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("client_id", clientId);
-        body.add("client_secret", clientSecret);
+        body.add("client_id", getClientId());
+        body.add("client_secret", getClientSecret());
         body.add("code", code);
         body.add("grant_type", "authorization_code");
         body.add("redirect_uri", redirectUri);
@@ -136,6 +153,16 @@ public class GoogleOAuthService {
             // 4. Issue JWT Pair via AuthService
             return authService.handleOAuthSuccess(user);
 
+        } catch (org.springframework.web.client.HttpStatusCodeException e) {
+            log.error("Google OAuth token exchange failed with HTTP status {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            String errorDetail = e.getResponseBodyAsString();
+            if (errorDetail == null || errorDetail.isBlank()) {
+                errorDetail = e.getMessage();
+            }
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new AppException("Google Client Authentication Failed (401 Unauthorized). The GOOGLE_CLIENT_SECRET configured in Render does not match the Client Secret for " + getClientId() + " in Google Cloud Console.", HttpStatus.BAD_REQUEST);
+            }
+            throw new AppException("Google authentication failed: " + errorDetail, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("Google OAuth token exchange or profile fetch failed: {}", e.getMessage());
             throw new AppException("Google authentication failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
