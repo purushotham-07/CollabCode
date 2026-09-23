@@ -1,8 +1,19 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
+const getBaseUrl = () => {
+  let url = (import.meta.env.VITE_API_BASE_URL || '/api').trim();
+  while (url.endsWith('/') && url.length > 1) {
+    url = url.slice(0, -1);
+  }
+  if (url.startsWith('http') && !url.endsWith('/api') && !url.includes('/api/')) {
+    url = `${url}/api`;
+  }
+  return url;
+};
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: getBaseUrl(),
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
