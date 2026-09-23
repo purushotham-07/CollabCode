@@ -107,7 +107,7 @@ public class AuthService {
         refreshTokenRepository.save(newTokenDoc);
 
         String accessToken = jwtService.generateAccessToken(user);
-        TokenResponse response = TokenResponse.of(accessToken, jwtService.getAccessTokenExpirationMs(), UserDto.from(user));
+        TokenResponse response = TokenResponse.of(accessToken, newRawToken, jwtService.getAccessTokenExpirationMs(), UserDto.from(user));
 
         return new AuthResult(response, newRawToken);
     }
@@ -140,7 +140,7 @@ public class AuthService {
         RefreshToken refreshToken = new RefreshToken(user.getId(), hash, family, expiresAt);
         refreshTokenRepository.save(refreshToken);
 
-        TokenResponse tokenResponse = TokenResponse.of(accessToken, jwtService.getAccessTokenExpirationMs(), UserDto.from(user));
+        TokenResponse tokenResponse = TokenResponse.of(accessToken, rawRefreshToken, jwtService.getAccessTokenExpirationMs(), UserDto.from(user));
         return new AuthResult(tokenResponse, rawRefreshToken);
     }
 

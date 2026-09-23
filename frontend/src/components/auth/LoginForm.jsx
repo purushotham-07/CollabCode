@@ -45,7 +45,7 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       const data = await authApi.login(formData);
-      setAuth(data.user, data.accessToken);
+      setAuth(data.user, data.accessToken, data.refreshToken);
       navigate(from, { replace: true });
     } catch (err) {
       const msg =

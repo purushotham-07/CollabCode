@@ -52,7 +52,7 @@ export default function RegisterForm() {
         email: formData.email,
         password: formData.password,
       });
-      setAuth(data.user, data.accessToken);
+      setAuth(data.user, data.accessToken, data.refreshToken);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       const msg =

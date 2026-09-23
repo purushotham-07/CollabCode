@@ -19,8 +19,9 @@ export default function AuthCallback() {
 
     const exchangeCode = async () => {
       try {
-        const data = await authApi.googleCallback(code);
-        setAuth(data.user, data.accessToken);
+        const redirectUri = `${window.location.origin}/auth/callback`;
+        const data = await authApi.googleCallback(code, redirectUri);
+        setAuth(data.user, data.accessToken, data.refreshToken);
         navigate('/dashboard', { replace: true });
       } catch (err) {
         setError(

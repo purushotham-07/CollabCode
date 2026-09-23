@@ -52,11 +52,14 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(HttpServletRequest request,
                                                  HttpServletResponse response,
+                                                 @RequestBody(required = false) Map<String, String> body,
                                                  @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String cookieRefreshToken) {
         String tokenToUse = cookieRefreshToken;
         if (tokenToUse == null || tokenToUse.isBlank()) {
-            // Check authorization header fallback or custom header
             tokenToUse = request.getHeader("X-Refresh-Token");
+        }
+        if ((tokenToUse == null || tokenToUse.isBlank()) && body != null) {
+            tokenToUse = body.get("refreshToken");
         }
 
         if (tokenToUse == null || tokenToUse.isBlank()) {
@@ -71,8 +74,15 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request,
                                                       HttpServletResponse response,
+                                                      @RequestBody(required = false) Map<String, String> body,
                                                       @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String cookieRefreshToken) {
-        String tokenToUse = cookieRefreshToken != null ? cookieRefreshToken : request.getHeader("X-Refresh-Token");
+        String tokenToUse = cookieRefreshToken;
+        if (tokenToUse == null || tokenToUse.isBlank()) {
+            tokenToUse = request.getHeader("X-Refresh-Token");
+        }
+        if ((tokenToUse == null || tokenToUse.isBlank()) && body != null) {
+            tokenToUse = body.get("refreshToken");
+        }
         authService.logout(tokenToUse);
         clearRefreshTokenCookie(response);
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
@@ -98,9 +108,9 @@ public class AuthController {
 
         String url = googleOAuthService.getAuthorizationUrl(redirectUri);
         return ResponseEntity.ok(Map.of(
-                "configured", true,
-                "url", url
-        ));
+                    "configured", true,
+                    "url", url
+            ));
     }
 
     @PostMapping("/oauth2/google/callback")
@@ -114,10 +124,10 @@ public class AuthController {
     private void attachRefreshTokenCookie(HttpServletResponse response, String refreshToken, Duration maxAge) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
                 .httpOnly(true)
-                .secure(false) // In production set to true for HTTPS
-                .path("/api/auth")
+                .secure(true) // Required for SameSite=None and HTTPS cross-origin
+                .path("/")
                 .maxAge(maxAge)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
@@ -125,10 +135,10 @@ public class AuthController {
     private void clearRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
                 .httpOnly(true)
-                .secure(false)
-                .path("/api/auth")
+                .secure(true)
+                .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }

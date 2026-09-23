@@ -11,7 +11,8 @@ export default function OAuthButton({ text = 'Continue with Google' }) {
   useEffect(() => {
     const fetchOAuthUrl = async () => {
       try {
-        const data = await authApi.getGoogleAuthUrl();
+        const redirectUri = `${window.location.origin}/auth/callback`;
+        const data = await authApi.getGoogleAuthUrl(redirectUri);
         setConfigured(Boolean(data.configured));
         setAuthUrl(data.url || '');
       } catch (err) {

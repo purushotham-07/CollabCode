@@ -73,14 +73,18 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const storedRefreshToken = typeof localStorage !== 'undefined' ? localStorage.getItem('collabcode_refresh_token') : null;
         const response = await axios.post(
           `${apiClient.defaults.baseURL}/auth/refresh`,
-          {},
-          { withCredentials: true }
+          storedRefreshToken ? { refreshToken: storedRefreshToken } : {},
+          {
+            withCredentials: true,
+            headers: storedRefreshToken ? { 'X-Refresh-Token': storedRefreshToken } : {},
+          }
         );
 
-        const { accessToken, user } = response.data;
-        useAuthStore.getState().setAuth(user, accessToken);
+        const { accessToken, refreshToken, user } = response.data;
+        useAuthStore.getState().setAuth(user, accessToken, refreshToken || storedRefreshToken);
 
         processQueue(null, accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;

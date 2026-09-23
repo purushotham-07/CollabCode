@@ -39,6 +39,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/invites/**").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
                 .requestMatchers("/ws/**").permitAll() // WebSocket handshake handles its own token validation
                 .anyRequest().authenticated()

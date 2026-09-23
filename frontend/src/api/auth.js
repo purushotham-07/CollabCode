@@ -11,13 +11,27 @@ export const authApi = {
     return response.data;
   },
 
-  refresh: async () => {
-    const response = await apiClient.post('/auth/refresh');
+  refresh: async (refreshToken) => {
+    const token = refreshToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('collabcode_refresh_token') : null);
+    const response = await apiClient.post(
+      '/auth/refresh',
+      token ? { refreshToken: token } : {},
+      {
+        headers: token ? { 'X-Refresh-Token': token } : {},
+      }
+    );
     return response.data;
   },
 
-  logout: async () => {
-    const response = await apiClient.post('/auth/logout');
+  logout: async (refreshToken) => {
+    const token = refreshToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('collabcode_refresh_token') : null);
+    const response = await apiClient.post(
+      '/auth/logout',
+      token ? { refreshToken: token } : {},
+      {
+        headers: token ? { 'X-Refresh-Token': token } : {},
+      }
+    );
     return response.data;
   },
 
